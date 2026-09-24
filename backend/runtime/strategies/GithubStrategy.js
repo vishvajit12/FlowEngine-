@@ -5,20 +5,9 @@ const httpClient = require('../adapters/httpClient');
 
 function parseOwnerRepo(repoInput) {
   // Accepts "github.com/owner/repo", "https://github.com/owner/repo", or "owner/repo"
-  const cleaned = String(repoInput || '')
-    .trim()
-    .replace(/^https?:\/\//i, '')
-    .replace(/^github\.com\//i, '')
-    .replace(/^www\.github\.com\//i, '')
-    .replace(/\/$/, '');
-
-  const segments = cleaned.split('/').map((segment) => segment.trim()).filter(Boolean);
-  const [owner, repo] = segments;
-
-  if (!owner || !repo) {
-    throw new Error(`Could not parse a valid owner/repo from "${repoInput}"`);
-  }
-
+  const cleaned = repoInput.replace(/^https?:\/\//, '').replace(/^github\.com\//, '').replace(/\/$/, '');
+  const [owner, repo] = cleaned.split('/');
+  if (!owner || !repo) throw new Error(`Could not parse a valid owner/repo from "${repoInput}"`);
   return { owner, repo };
 }
 

@@ -13,45 +13,12 @@ function resolveProvider(model) {
   return model?.includes('OpenAI') ? 'openai' : 'gemini';
 }
 
-function truncateForPrompt(value, maxChars = 6000) {
-  if (!value) return value;
-  const text = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
-  return text.length > maxChars ? `${text.slice(0, maxChars - 120)}\n... [truncated for model context window]` : text;
-}
-
-function buildPromptWithContext(prompt, upstreamOutput) {
-  if (!upstreamOutput) return prompt;
-
-  const repoMeta = [];
-  if (upstreamOutput.fullName) repoMeta.push(`- Repository: ${upstreamOutput.fullName}`);
-  if (upstreamOutput.defaultBranch) repoMeta.push(`- Default branch: ${upstreamOutput.defaultBranch}`);
-  if (upstreamOutput.language) repoMeta.push(`- Language: ${upstreamOutput.language}`);
-  if (upstreamOutput.owner) repoMeta.push(`- Owner: ${upstreamOutput.owner}`);
-  if (upstreamOutput.repo) repoMeta.push(`- Repo: ${upstreamOutput.repo}`);
-
-  const extras = [];
-  if (upstreamOutput.data) {
-    const summary = truncateForPrompt(upstreamOutput.data);
-    extras.push(`Repository context:\n${summary}`);
-  }
-
-  const contextBlock = [
-    ...repoMeta,
-    ...(extras.length ? ['\n' + extras.join('\n\n')] : []),
-  ].join('\n');
-
-  if (!contextBlock) return prompt;
-
-  return `${contextBlock}\n\n${prompt}`;
-}
-
 class AITaskStrategy extends NodeStrategy {
   async execute(input, context) {
-    const { model, credentialId, prompt, temperature, upstreamOutput } = input;
+    const { model, credentialId, prompt, temperature } = input;
     if (!prompt) throw new Error('AI Task node has no prompt configured');
 
     const provider = resolveProvider(model);
-    const enrichedPrompt = buildPromptWithContext(prompt, upstreamOutput);
 
     // credentialId is explicit (the frontend's config panel sets it from
     // the live vault) but we still scope the lookup by userId AND
@@ -68,7 +35,7 @@ class AITaskStrategy extends NodeStrategy {
     const apiKey = decrypt(credentialDoc.encryptedValue);
     const adapter = provider === 'openai' ? new OpenAIAdapter(apiKey) : new GeminiAdapter(apiKey);
 
-    const output = await adapter.generate(enrichedPrompt, { model, temperature });
+    const output = await adapter.generate(prompt, { model, temperature });
 
     return { provider, model, output };
   }
