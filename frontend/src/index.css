@@ -1,0 +1,51 @@
+@import "tailwindcss";
+/* Fonts are loaded via <link> tags in index.html, not @import here --
+   keeps this stylesheet spec-valid (browsers require @import to be the
+   very first thing in a file) and avoids a render-blocking chain. */
+
+/*
+  Brand tokens -- locked palette from the project spec.
+  Do not introduce new colors outside this set; use opacity/gradients
+  on these instead (see spec: "STRICT COLOR SYSTEM").
+*/
+@theme {
+  --color-coral: #F05D58;
+  --color-coral-hover: #DB5550;
+  --color-sage: #DBDDCB;
+  --color-ink: #393937;
+  --color-teal: #348681;
+  --color-teal-dark: #276B66;
+  --color-card: #F7F9FC;
+
+  --color-amber: #C98A1E;
+  --color-amber-bg: #FBF0DC;
+  --color-teal-bg: #E4F0EF;
+  --color-coral-bg: #FCEAE9;
+
+  --color-sidebar: #232322;
+
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-card);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* React Flow uses its own CSS custom properties for chrome (controls, minimap) */
+.react-flow {
+  --xy-background-color: var(--color-card);
+  --xy-node-border-radius: 10px;
+}
