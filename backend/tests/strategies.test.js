@@ -2,7 +2,20 @@ require('./setup-env');
 const test = require('node:test');
 const assert = require('node:assert');
 const PdfStrategy = require('../runtime/strategies/PdfStrategy');
+const AITaskStrategy = require('../runtime/strategies/AITaskStrategy');
 const NodeFactory = require('../runtime/factory');
+
+test('AITaskStrategy includes upstream repository data in the analysis prompt', () => {
+  const prompt = AITaskStrategy.buildAnalysisPrompt('Analyze this repository.', {
+    status: 200,
+    data: '# README\nA service with an Express API.',
+  });
+
+  assert.match(prompt, /^Analyze this repository\./);
+  assert.match(prompt, /"status": 200/);
+  assert.match(prompt, /A service with an Express API\./);
+  assert.match(prompt, /Use this data as the source for your analysis\./);
+});
 
 test('PdfStrategy produces a genuinely valid PDF (not just a non-empty buffer)', async () => {
   const strategy = new PdfStrategy();

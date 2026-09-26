@@ -32,7 +32,7 @@ export const TEMPLATES = {
         temperature: '0.4',
       }),
       node('n5', 'pdf', 600, 260, 'Generate PDF', { template: 'Architecture Summary' }),
-      node('n6', 'email', 880, 260, 'Send Email', { to: 'sushantkoravi50@gmail.com', subject: 'Your repository analysis is ready' }),
+      node('n6', 'email', 880, 260, 'Send Email', { to: 'vishvajit6264@gmail.com', subject: 'Your repository analysis is ready' }),
     ],
     edges: [
       { id: 'e1', source: 'n1', target: 'n2' },

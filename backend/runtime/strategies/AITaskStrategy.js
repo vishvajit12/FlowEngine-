@@ -13,9 +13,16 @@ function resolveProvider(model) {
   return model?.includes('OpenAI') ? 'openai' : 'gemini';
 }
 
+function buildAnalysisPrompt(prompt, upstreamOutput) {
+  if (upstreamOutput === undefined || upstreamOutput === null) return prompt;
+
+  const context = typeof upstreamOutput === 'string' ? upstreamOutput : JSON.stringify(upstreamOutput, null, 2);
+  return `${prompt}\n\nRepository data from the previous workflow step:\n---\n${context}\n---\nUse this data as the source for your analysis.`;
+}
+
 class AITaskStrategy extends NodeStrategy {
   async execute(input, context) {
-    const { model, credentialId, prompt, temperature } = input;
+    const { model, credentialId, prompt, temperature, upstreamOutput } = input;
     if (!prompt) throw new Error('AI Task node has no prompt configured');
 
     const provider = resolveProvider(model);
@@ -35,10 +42,11 @@ class AITaskStrategy extends NodeStrategy {
     const apiKey = decrypt(credentialDoc.encryptedValue);
     const adapter = provider === 'openai' ? new OpenAIAdapter(apiKey) : new GeminiAdapter(apiKey);
 
-    const output = await adapter.generate(prompt, { model, temperature });
+    const output = await adapter.generate(buildAnalysisPrompt(prompt, upstreamOutput), { model, temperature });
 
     return { provider, model, output };
   }
 }
 
 module.exports = AITaskStrategy;
+module.exports.buildAnalysisPrompt = buildAnalysisPrompt;
