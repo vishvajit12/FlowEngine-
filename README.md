@@ -1,5 +1,5 @@
 # FlowEngine
-{"host":"smtp.gmail.com","port":587,"user":"karandesid25@gmail.com","pass":"YOUR_APP_PASSWORD"}
+
 **A Visual Durable Workflow Engine for AI Applications**
 
 ---
@@ -395,3 +395,4 @@ React (Vite) → Express API → Runtime Engine → BullMQ → Redis → Worker
 ```
 
 The durable execution engine is what makes this project distinct from a workflow-builder tutorial. Everything else — the visual canvas, the AI integrations, the live monitoring — exists to demonstrate that engine doing something real.
+{"host":"smtp.gmail.com","port":587,"user":"karandesid25@gmail.com","pass":"YOUR_APP_PASSWORD"}
